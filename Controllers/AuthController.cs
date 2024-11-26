@@ -14,20 +14,26 @@ namespace real_estate_api.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
-        public AuthController(IAuthService authService)
+        private readonly ILogger<AuthController> _logger;
+
+        public AuthController(IAuthService authService, ILogger<AuthController> logger)
         {
             _authService = authService;
+            _logger = logger;
         }
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDTO userDto)
         {
             try
             {
+                _logger.LogInformation("Registration attempt for user: {Username}", userDto.Username);
                 await _authService.RegisterAsync(userDto);
+                _logger.LogInformation("User registered successfully: {Username}", userDto.Username);
                 return Ok(new { message = "User registered successfully" });
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred during registration for user: {Username}", userDto.Username);
                 return BadRequest(new { error = ex.Message });
             }
         }
@@ -44,7 +50,7 @@ namespace real_estate_api.Controllers
                 var cookieOptions = new CookieOptions
                 {
                     HttpOnly = true,  // Đảm bảo cookie chỉ có thể được truy cập bởi server, không qua JavaScript
-                    Secure = true,    // Cookie chỉ được gửi qua HTTPS. Đảm bảo môi trường của bạn đang sử dụng HTTPS
+                    Secure = false,    
                     SameSite = SameSiteMode.Strict,  // Chế độ bảo vệ cho cookie, tránh bị lộ khi gửi request từ domain khác
                     Expires = DateTime.UtcNow.AddDays(1)  // Thời gian hết hạn của cookie, 1 ngày trong trường hợp này
                 };
@@ -62,6 +68,21 @@ namespace real_estate_api.Controllers
             {
                 // Xử lý lỗi khi login không thành công
                 return Unauthorized(new { message = ex.Message });
+            }
+        }
+        [HttpPost("logout")]
+        public IActionResult Logout()
+        {
+            try
+            {
+                // Xóa cookie chứa JWT
+                Response.Cookies.Delete("auth_token");
+
+                return Ok(new { message = "Logout successful" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
         }
 
