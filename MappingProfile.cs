@@ -7,7 +7,7 @@ namespace real_estate_api
     {
         public MappingProfile()
         {
-            CreateMap<UserRegisterDTO, User>();
+            CreateMap<RegisterRequestDTO, User>();
         }
     }
 }

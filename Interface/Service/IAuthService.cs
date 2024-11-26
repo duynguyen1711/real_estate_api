@@ -4,6 +4,7 @@ namespace real_estate_api.Interface.Service
 {
     public interface IAuthService
     {
-        Task<bool> RegisterAsync(UserRegisterDTO userDto);
+        Task<bool> RegisterAsync(RegisterRequestDTO userDto);
+        Task<LoginResponseDTO> LoginAsync(LoginRequestDTO login);
     }
 }

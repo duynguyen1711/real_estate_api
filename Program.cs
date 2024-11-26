@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using real_estate_api.Data;
+using real_estate_api.Helpers;
 using real_estate_api.Interface.Service;
 using real_estate_api.Services;
 using real_estate_api.UnitofWork;
@@ -15,6 +16,7 @@ var connectionString =
         + "'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
+builder.Services.AddScoped<JwtHelper>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
