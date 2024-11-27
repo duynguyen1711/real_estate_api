@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using real_estate_api.Data;
@@ -23,7 +24,13 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddAuthentication("Bearer")
+builder.Services
+    .AddAuthentication(options =>
+    {
+        // Xác định Authentication scheme (tên mặc định "Bearer" vẫn có thể dùng)
+        options.DefaultScheme = "Bearer";
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
     .AddJwtBearer(options =>
     {
         var jwtConfig = builder.Configuration.GetSection("Jwt");
@@ -39,24 +46,39 @@ builder.Services.AddAuthentication("Bearer")
                 System.Text.Encoding.UTF8.GetBytes(jwtConfig["Key"])
             )
         };
+
+        // Lấy token từ cookie thay vì header Authorization
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Cookies["auth_token"]; // Cookie chứa token
+                if (!string.IsNullOrEmpty(accessToken))
+                {
+                    context.Token = accessToken; // Đặt token từ cookie vào request
+                }
+                return Task.CompletedTask;
+            }
+        };
     });
 builder.Services.AddAuthorization();
 builder.Services.AddDataProtection();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
+    options.AddPolicy("AllowSpecificOrigin", policy =>
     {
-        policy.AllowAnyOrigin()  
-              .AllowAnyHeader()  
-              .AllowAnyMethod(); 
+        policy.WithOrigins("http://localhost:5173")
+             .AllowAnyHeader()  
+             .AllowAnyMethod()
+             .AllowCredentials();
     });
 });
 
 
 var app = builder.Build();
 
-app.UseCors("AllowAll");
+app.UseCors("AllowSpecificOrigin");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

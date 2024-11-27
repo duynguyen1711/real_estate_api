@@ -62,7 +62,15 @@ namespace real_estate_api.Controllers
                 Response.Cookies.Append("auth_token", jwtToken, cookieOptions);
 
                 // Trả về response cho client
-                return Ok(loginResponse);
+                return Ok( new LoginResponseDTO 
+                { 
+                    UserId = loginResponse.UserId,
+                    Username = loginResponse.Username,
+                    Avatar = loginResponse.Avatar,
+                    Message = loginResponse.Message,
+                    Email = loginResponse.Email,
+                }
+                );
             }
             catch (Exception ex)
             {
