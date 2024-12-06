@@ -9,7 +9,7 @@ using System.Text;
 
 namespace real_estate_api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/auth")]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -24,6 +24,10 @@ namespace real_estate_api.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDTO userDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             try
             {
                 _logger.LogInformation("Registration attempt for user: {Username}", userDto.Username);
@@ -40,6 +44,10 @@ namespace real_estate_api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginRequestDTO login)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             try
             {
                 // Gọi phương thức đăng nhập để lấy JWT token

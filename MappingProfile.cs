@@ -8,6 +8,12 @@ namespace real_estate_api
         public MappingProfile()
         {
             CreateMap<RegisterRequestDTO, User>();
+            CreateMap<User, UserDTO>();
+            CreateMap<UpdateUserDTO,User >()
+            .ForMember(dest => dest.Password, opt => opt.Ignore());
+
+
+
         }
     }
 }

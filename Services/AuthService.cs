@@ -29,7 +29,7 @@ namespace real_estate_api.Services
                 throw new Exception("Username already exists.");
             var existingUserByEmail = await _unitOfWork.UserRepository.GetByEmailAsync(userDto.Email);
             if (existingUserByEmail != null)
-                throw new Exception("Username already exists");
+                throw new Exception("Email already exists");
      
             var user = _mapper.Map<User>(userDto);
             user.Password = PasswordHelper.HashPassword(user.Password);
