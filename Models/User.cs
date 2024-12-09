@@ -8,6 +8,7 @@
         public string Password { get; set; } = string.Empty;
         public string? Avatar { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; } 
 
         // Navigation properties
         public ICollection<Post> Posts { get; set; } = new List<Post>();

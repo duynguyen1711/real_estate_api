@@ -10,5 +10,6 @@ namespace real_estate_api.DTOs
         public string Username { get; set; } = string.Empty;
         public string? Avatar { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; } 
     }
 }

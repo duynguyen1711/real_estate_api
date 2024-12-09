@@ -20,9 +20,16 @@ namespace real_estate_api.Services
         }
        
 
-        public Task<bool> DeleteUserAsync(string id)
+        public async Task<bool> DeleteUserAsync(string id)
         {
-            throw new NotImplementedException();
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(id);
+            if (user == null)
+            {
+                throw new ApplicationException("User not found");
+            }
+            await _unitOfWork.UserRepository.DeleteAsync(id);
+            await _unitOfWork.SaveChangesAsync();
+            return true;
         }
 
         public async Task<List<UserDTO>> GetAllUsersAsync()
@@ -58,21 +65,22 @@ namespace real_estate_api.Services
             return _mapper.Map<UserDTO>(user);
         }
 
-        public async Task<User> UpdateUserAsync(UpdateUserDTO userDTO,string id)
+        public async Task<UserDTO> UpdateUserAsync(UpdateUserRqDTO userDTO,string id)
         {
             var user = await _unitOfWork.UserRepository.GetByIdAsync(id);
-            if(user == null)
+            if (user == null)
             {
                 throw new ApplicationException("User not found");
             }
-            if (!string.IsNullOrEmpty(userDTO.Password))
-            {
-                userDTO.Password = PasswordHelper.HashPassword(userDTO.Password);
-            }       
-            _mapper.Map(userDTO, user);
+            user.Username = !string.IsNullOrWhiteSpace(userDTO.Username) ? userDTO.Username : user.Username;
+            user.Password = !string.IsNullOrWhiteSpace(userDTO.Password) ? PasswordHelper.HashPassword(userDTO.Password) : user.Password;
+            user.Email = !string.IsNullOrWhiteSpace(userDTO.Email) ? userDTO.Email : user.Email;
+            user.Avatar = !string.IsNullOrWhiteSpace(userDTO.Avatar) ? userDTO.Avatar : user.Avatar;
+            user.UpdatedAt = DateTime.Now;
             await _unitOfWork.UserRepository.UpdateAsync(user);
             await _unitOfWork.SaveChangesAsync();
-            return _mapper.Map<User>(user);
+
+            return _mapper.Map<UserDTO>(user);
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace real_estate_api.DTOs
 {
-    public class UpdateUserDTO
+    public class UpdateUserRqDTO
     {
         [EmailAddress]
         public string? Email { get; set; }

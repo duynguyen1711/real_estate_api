@@ -89,7 +89,7 @@ namespace real_estate_api.Controllers
         }
         [Authorize]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(UpdateUserDTO userDTO, string id)
+        public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRqDTO userDTO, string id)
         {
             try
             {
@@ -111,9 +111,21 @@ namespace real_estate_api.Controllers
                 return BadRequest(new { message = ex.Message });
             }
             catch (Exception ex)
-            {
-                // Xử lý lỗi khác (ví dụ: lỗi cơ sở dữ liệu, lỗi không xác định)
+            { 
                 return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
+            }
+        }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            try
+            {
+                await _userService.DeleteUserAsync(id);
+                return Ok("Deleted");
+            }
+            catch (ApplicationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
         }
 

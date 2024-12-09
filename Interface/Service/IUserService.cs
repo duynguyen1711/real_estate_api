@@ -8,7 +8,7 @@ namespace real_estate_api.Interface.Service
         Task<UserDTO> GetUserByIdAsync(string id);
         Task<UserDTO> GetUserByEmailAsync(string email);
         Task<UserDTO> GetUserByUsernameAsync(string username);
-        Task<User> UpdateUserAsync(UpdateUserDTO userDTO,string id);
+        Task<UserDTO> UpdateUserAsync(UpdateUserRqDTO userDTO,string id);
         Task<bool> DeleteUserAsync(string id);
         Task<List<UserDTO>> GetAllUsersAsync();
     }

@@ -9,8 +9,8 @@ namespace real_estate_api
         {
             CreateMap<RegisterRequestDTO, User>();
             CreateMap<User, UserDTO>();
-            CreateMap<UpdateUserDTO,User >()
-            .ForMember(dest => dest.Password, opt => opt.Ignore());
+            CreateMap<UpdateUserRqDTO, User>();
+            
 
 
 

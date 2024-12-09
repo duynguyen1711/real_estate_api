@@ -50,10 +50,9 @@ namespace real_estate_api.Repositories
             return await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
         }
 
-        public  Task UpdateAsync(User user)
+        public async Task UpdateAsync(User user)
         {
             _context.Users.Update(user);
-            return Task.CompletedTask;
         }
     }
 }
