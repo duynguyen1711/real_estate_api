@@ -7,10 +7,12 @@ namespace real_estate_api.Interface.Repository
         Task<User> GetByUsernameAsync(string username);
         Task<User> GetByEmailAsync(string email);
         Task<User> GetByIdAsync(string id);
+        Task<List<User>> FindDuplicatesAsync(string username, string email);
         Task<IEnumerable<User>> GetAllAsync();
         Task AddAsync(User user);
         Task UpdateAsync(User user);
         Task <bool>DeleteAsync(string id);
+
 
     }
 }

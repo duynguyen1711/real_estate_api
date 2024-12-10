@@ -96,7 +96,7 @@ namespace real_estate_api.Controllers
                 var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
                 if (userId != id)
                 {
-                    return Forbid();
+                    return Forbid("You do not have permission to update this profile.");
                 }
                 var updatedUser = await _userService.UpdateUserAsync(userDTO, userId);
                 if (updatedUser == null)

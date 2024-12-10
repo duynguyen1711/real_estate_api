@@ -72,6 +72,17 @@ namespace real_estate_api.Services
             {
                 throw new ApplicationException("User not found");
             }
+            var duplicateUsers = await _unitOfWork.UserRepository.FindDuplicatesAsync(userDTO.Username, userDTO.Email);
+            if (duplicateUsers.Any(u => u.Username == userDTO.Username && u.Id != user.Id))
+            {
+                throw new ApplicationException("Username already exists");
+            }
+            if (duplicateUsers.Any(u => u.Email == userDTO.Email && u.Id != user.Id))
+            {
+                throw new ApplicationException("Email already exists");
+            }
+
+
             user.Username = !string.IsNullOrWhiteSpace(userDTO.Username) ? userDTO.Username : user.Username;
             user.Password = !string.IsNullOrWhiteSpace(userDTO.Password) ? PasswordHelper.HashPassword(userDTO.Password) : user.Password;
             user.Email = !string.IsNullOrWhiteSpace(userDTO.Email) ? userDTO.Email : user.Email;

@@ -72,7 +72,7 @@ namespace real_estate_api.Controllers
                 // Trả về response cho client
                 return Ok( new LoginResponseDTO 
                 { 
-                    UserId = loginResponse.UserId,
+                    Id = loginResponse.Id,
                     Username = loginResponse.Username,
                     Avatar = loginResponse.Avatar,
                     Message = loginResponse.Message,

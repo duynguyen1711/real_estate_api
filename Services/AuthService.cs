@@ -59,7 +59,7 @@ namespace real_estate_api.Services
             {
                 Message = "Login successful.",
                 Token = token,
-                UserId = existingUserByUsername.Id,
+                Id = existingUserByUsername.Id,
                 Username = existingUserByUsername.Username,
                 Email = existingUserByUsername.Email
 

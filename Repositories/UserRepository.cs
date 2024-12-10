@@ -30,6 +30,14 @@ namespace real_estate_api.Repositories
             return false;
         }
 
+        public async  Task<List<User>> FindDuplicatesAsync(string username, string email)
+        {
+            return await _context.Users
+             .Where(u => (u.Username == username || u.Email == email))
+             .Select(u => new User { Id = u.Id, Username = u.Username, Email = u.Email })
+             .ToListAsync();
+        }
+
         public async Task<IEnumerable<User>> GetAllAsync()
         {
             return await _context.Users.ToListAsync();
