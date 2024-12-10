@@ -4,12 +4,12 @@ namespace real_estate_api.DTOs
 {
     public class UserDTO
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public string Id { get; set; } 
         
-        public string Email { get; set; } = string.Empty;
-        public string Username { get; set; } = string.Empty;
+        public string Email { get; set; } 
+        public string Username { get; set; } 
         public string? Avatar { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } 
         public DateTime? UpdatedAt { get; set; } 
     }
 }

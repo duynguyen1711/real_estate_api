@@ -10,7 +10,9 @@ namespace real_estate_api
             CreateMap<RegisterRequestDTO, User>();
             CreateMap<User, UserDTO>();
             CreateMap<UpdateUserRqDTO, User>();
-            
+            CreateMap<PostCreateDTO, Post>();
+            CreateMap<Post, PostResponseDTO>();
+
 
 
 

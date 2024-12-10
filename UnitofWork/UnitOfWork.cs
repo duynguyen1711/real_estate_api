@@ -10,12 +10,15 @@ namespace real_estate_api.UnitofWork
     {
         private readonly ApplicationDbContext _context;
         private IUserRepository _userRepository;
+        private IPostRepository _postRepository;
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
         }
         public IUserRepository UserRepository => _userRepository ??= new UserRepository(_context);
-
+        public IPostRepository PostRepository => _postRepository ??= new PostRepository(_context);
+      
+ 
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();

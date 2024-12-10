@@ -21,6 +21,7 @@ builder.Services.AddScoped<JwtHelper>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPostService, PostService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

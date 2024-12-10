@@ -7,7 +7,7 @@ namespace real_estate_api.Models
         public string Id { get; set; } = Guid.NewGuid().ToString();
         public string Title { get; set; } = string.Empty;
         public int Price { get; set; }
-        public List<string> Images { get; set; } = new List<string>();
+        public List<string>? Images { get; set; } = new List<string>();
         public string Address { get; set; } = string.Empty;
         public string City { get; set; } = string.Empty;
         public int Bedroom { get; set; }
