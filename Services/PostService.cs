@@ -31,6 +31,20 @@ namespace real_estate_api.Services
 
         }
 
+        public async Task<bool> DetelePostAsync(string id, string userId)
+        {
+           var post = await _unitOfWork.PostRepository.GetPost(id);
+            if (post == null)
+            {
+                throw new ApplicationException("Post not found");
+            }
+            if (post.UserId != userId) {
+                throw new ApplicationException("User does not have permission to delete this post");
+            }
+            
+            return await _unitOfWork.PostRepository.DeleteAsync(post.Id);
+        }
+
         public async Task<IEnumerable<PostResponseDTO>> GetAllPostAsync()
         {
             var posts = await _unitOfWork.PostRepository.GetAllAsync();
@@ -105,5 +119,9 @@ namespace real_estate_api.Services
             return postDTOs;
         }
 
+        public Task<bool> UpdatePostAsync(PostUpdateDTO postUpdateDTO, string id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

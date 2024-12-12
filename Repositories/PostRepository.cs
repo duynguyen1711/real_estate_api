@@ -25,6 +25,7 @@ namespace real_estate_api.Repositories
             if (post != null)
             {
                 _context.Posts.Remove(post);
+                await _context.SaveChangesAsync();
                 return true;
             }
             return false;
@@ -43,6 +44,11 @@ namespace real_estate_api.Repositories
                 .Include(p => p.PostDetail) // Thêm chi tiết bài đăng
                 .ToListAsync();
 
+        }
+
+        public async Task<Post> GetPost(string id)
+        {
+            return await _context.Posts.FirstOrDefaultAsync(u => u.Id == id);
         }
 
         public async Task UpdateAsync(Post post)

@@ -85,7 +85,49 @@ namespace real_estate_api.Controllers
                 });
             }
         }
-        
+        [Authorize]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePost(string id)
+        {
+            try
+            {
+                var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (userId == null)
+                {
+                    return Unauthorized(new
+                    {
+                        status = "error",
+                        message = "User is not authorized."
+                    });
+                }
+
+
+                var isDeleted = await _postService.DetelePostAsync(id, userId);
+                if (!isDeleted)
+                {
+                    return BadRequest(new
+                    {
+                        status = "error",
+                        message = "Failed to delete post."
+                    });
+                }
+
+                return Ok(new
+                {
+                    status = "success",
+                    message = "Post deleted successfully"
+                });
+                
+            }
+            catch (ApplicationException ex)
+            {
+                return BadRequest(new
+                {
+                    status = "error",
+                    message = ex.Message
+                });
+            }
+        } 
 
 
     }
