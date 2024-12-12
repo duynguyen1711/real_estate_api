@@ -11,11 +11,7 @@ namespace real_estate_api
             CreateMap<User, UserDTO>();
             CreateMap<UpdateUserRqDTO, User>();
             CreateMap<PostCreateDTO, Post>();
-            CreateMap<Post, PostResponseDTO>().ForMember(dest => dest.User, opt => opt.MapFrom(src => new UserDTOForPost
-            {
-                Username = src.User.Username,
-                Avatar = src.User.Avatar
-            }));
+            CreateMap<PostDetailCreateDTO, PostDetail>(); 
         }
     }
 }

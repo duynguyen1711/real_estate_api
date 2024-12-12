@@ -36,6 +36,15 @@ namespace real_estate_api.Repositories
            return await _context.Posts.ToListAsync();
         }
 
+        public async Task<IEnumerable<Post>> GetAllWithUsersAndDetailsAsync()
+        {
+            return await _context.Posts
+                .Include(p => p.User) // Thêm thông tin User
+                .Include(p => p.PostDetail) // Thêm chi tiết bài đăng
+                .ToListAsync();
+
+        }
+
         public async Task UpdateAsync(Post post)
         {
             _context.Posts.Update(post);

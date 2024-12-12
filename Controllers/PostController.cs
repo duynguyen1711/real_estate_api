@@ -18,19 +18,28 @@ namespace real_estate_api.Controllers
             _logger = logger;
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllPost() { 
+        public async Task<ActionResult<IEnumerable<PostResponseDTO>>> GetAllPosts()
+        {
             try
             {
-                var posts = await _postService.GetAllPostAsync();
-                return Ok(posts);
-            }
-            catch (ApplicationException ex)
-            {
-                return BadRequest(new { message = ex.Message });
+                // Lấy danh sách bài đăng với chi tiết người dùng và bài đăng
+                var posts = await _postService.GetAllPostWithDetailAsync();
+
+                // Kiểm tra nếu danh sách rỗng
+                if (posts == null || !posts.Any())
+                {
+                    return NoContent(); // Nếu không có bài đăng, trả về NoContent
+                }
+
+                return Ok(posts); // Trả về danh sách bài đăng với chi tiết
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "An unexpected error occurred.", details = ex.Message });
+                // Log lỗi (nếu có)
+                _logger.LogError(ex, "An error occurred while fetching posts.");
+
+                // Trả về mã lỗi 500 nếu có ngoại lệ
+                return StatusCode(500, new { message = "An error occurred while fetching posts.", details = ex.Message });
             }
         }
         [Authorize]
@@ -48,13 +57,12 @@ namespace real_estate_api.Controllers
                         message = "User is not authorized."
                     });
                 }
-                postDTO.UserId = userId;
-                var createdPost = await _postService.AddPostAsync(postDTO);
+               
+                await _postService.AddPostAsync(postDTO, userId);
                 return Ok(new
                 {
                     status = "success",
-                    message = "Post created successfully",
-                    data = createdPost
+                    message = "Post created successfully"
                 });
             }
             catch (ApplicationException ex)
@@ -77,5 +85,8 @@ namespace real_estate_api.Controllers
                 });
             }
         }
+        
+
+
     }
 }

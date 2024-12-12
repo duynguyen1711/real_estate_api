@@ -16,8 +16,6 @@ namespace real_estate_api.DTOs
         public string Longitude { get; set; } 
         public PostType Type { get; set; }
         public PropertyType Property { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public string UserId { get; set; }
-        public PostDetail? PostDetail;
+        public PostDetailCreateDTO? PostDetail { get; set; }
     }
 }

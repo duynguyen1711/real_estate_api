@@ -20,6 +20,6 @@ namespace real_estate_api.DTOs
         public DateTime CreatedAt { get; set; } 
         public string UserId { get; set; }
         public UserDTOForPost User { get; set; }
-        public PostDetail? PostDetail { get; set; }
+        public PostDetailCreateDTO PostDetail { get; set; }
     }
 }

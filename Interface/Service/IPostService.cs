@@ -4,7 +4,8 @@ namespace real_estate_api.Interface.Service
 {
     public interface IPostService
     {
-        Task<PostResponseDTO> AddPostAsync(PostCreateDTO postDTO);
+        Task AddPostAsync(PostCreateDTO postDTO,string id);
         Task<IEnumerable<PostResponseDTO>> GetAllPostAsync();
+        Task<IEnumerable<PostResponseDTO>> GetAllPostWithDetailAsync();
     }
 }
