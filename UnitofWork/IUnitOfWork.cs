@@ -6,6 +6,7 @@ namespace real_estate_api.UnitofWork
     {
         IUserRepository UserRepository { get; }
         IPostRepository PostRepository { get; }
+        IPostDetailRepository PostDetailRepository { get; }
         Task SaveChangesAsync();
     }
 }

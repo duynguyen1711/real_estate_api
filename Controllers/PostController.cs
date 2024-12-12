@@ -127,8 +127,48 @@ namespace real_estate_api.Controllers
                     message = ex.Message
                 });
             }
-        } 
-
+        }
+        [Authorize]
+        [HttpPut("{postId}")]
+        public async Task<IActionResult> UpdatePost(PostUpdateDTO postDTO,string postId)
+        {
+            try
+            {
+                var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (userId == null)
+                {
+                    return Unauthorized(new
+                    {
+                        status = "error",
+                        message = "User is not authorized."
+                    });
+                }
+                await _postService.UpdatePostAsync(postDTO, userId, postId);
+                return Ok(new
+                {
+                    status = "success",
+                    message = "Post updated successfully."
+                });
+            }
+            catch (ApplicationException ex)
+            {
+                // Xử lý lỗi logic của ứng dụng (400 Bad Request)
+                return BadRequest(new
+                {
+                    status = "error",
+                    message = ex.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                // Xử lý lỗi chung (500 Internal Server Error)
+                return StatusCode(StatusCodes.Status500InternalServerError, new
+                {
+                    status = "error",
+                    message = "An unexpected error occurred. Please try again later."
+                });
+            }
+        }
 
     }
 }

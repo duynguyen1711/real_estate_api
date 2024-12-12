@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Hosting;
 using real_estate_api.DTOs;
+using real_estate_api.Enums;
 using real_estate_api.Helpers;
 using real_estate_api.Interface.Service;
 using real_estate_api.Models;
@@ -119,9 +120,33 @@ namespace real_estate_api.Services
             return postDTOs;
         }
 
-        public Task<bool> UpdatePostAsync(PostUpdateDTO postUpdateDTO, string id)
+        public async Task UpdatePostAsync(PostUpdateDTO postUpdateDTO, string userId,string postId)
         {
-            throw new NotImplementedException();
+            var post = await _unitOfWork.PostRepository.GetPost(postId);
+            
+            if (post == null) {
+                throw new ApplicationException("post not found");
+            }
+            if (post.UserId != userId)
+            {
+                throw new ApplicationException("User does not have permission to delete this post");
+            }
+            post.Title = postUpdateDTO.Title ?? post.Title;
+            post.Price = postUpdateDTO.Price ?? post.Price;
+            post.Images = postUpdateDTO.Images ?? post.Images;
+            post.Address = postUpdateDTO.Address ?? post.Address;
+            post.City = postUpdateDTO.City ?? post.City;
+            post.Bedroom = postUpdateDTO.Bedroom ?? post.Bedroom;
+            post.Bathroom = postUpdateDTO.Bathroom ?? post.Bathroom;
+            post.Latitude = postUpdateDTO.Latitude ?? post.Latitude;
+            post.Longitude = postUpdateDTO.Longitude ?? post.Longitude;
+            post.Type = postUpdateDTO.Type ?? post.Type;
+            post.Property = postUpdateDTO.Property ?? post.Property;
+
+            var updatedPostDetail = _mapper.Map<PostDetail>(postUpdateDTO.PostDetail);
+            post.PostDetail = await _unitOfWork.PostDetailRepository.UpdateAsync(updatedPostDetail);
+            await _unitOfWork.PostRepository.UpdateAsync(post);
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }
