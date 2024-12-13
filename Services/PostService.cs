@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using real_estate_api.DTOs;
 using real_estate_api.Enums;
@@ -13,10 +14,12 @@ namespace real_estate_api.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public PostService(IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly IPostDetailService _postDetailService;
+        public PostService(IUnitOfWork unitOfWork, IMapper mapper, IPostDetailService postDetailService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _postDetailService = postDetailService;
         }
 
         public async Task AddPostAsync(PostCreateDTO postDTO, string id)
@@ -34,15 +37,16 @@ namespace real_estate_api.Services
 
         public async Task<bool> DetelePostAsync(string id, string userId)
         {
-           var post = await _unitOfWork.PostRepository.GetPost(id);
+            var post = await _unitOfWork.PostRepository.GetPost(id);
             if (post == null)
             {
                 throw new ApplicationException("Post not found");
             }
-            if (post.UserId != userId) {
+            if (post.UserId != userId)
+            {
                 throw new ApplicationException("User does not have permission to delete this post");
             }
-            
+
             return await _unitOfWork.PostRepository.DeleteAsync(post.Id);
         }
 
@@ -119,18 +123,21 @@ namespace real_estate_api.Services
 
             return postDTOs;
         }
-
-        public async Task UpdatePostAsync(PostUpdateDTO postUpdateDTO, string userId,string postId)
+        public async Task<bool> UpdatePostAsync(PostUpdateDTO postUpdateDTO, string userId, string postId)
         {
-            var post = await _unitOfWork.PostRepository.GetPost(postId);
-            
-            if (post == null) {
-                throw new ApplicationException("post not found");
+            var post = await _unitOfWork.PostRepository.GetPostWithDetailsAsync(postId);
+
+            if (post == null)
+            {
+                throw new ApplicationException("Post not found");
             }
+
             if (post.UserId != userId)
             {
-                throw new ApplicationException("User does not have permission to delete this post");
+                throw new ApplicationException("User does not have permission to update this post");
             }
+
+            // Cập nhật thông tin của Post
             post.Title = postUpdateDTO.Title ?? post.Title;
             post.Price = postUpdateDTO.Price ?? post.Price;
             post.Images = postUpdateDTO.Images ?? post.Images;
@@ -143,10 +150,25 @@ namespace real_estate_api.Services
             post.Type = postUpdateDTO.Type ?? post.Type;
             post.Property = postUpdateDTO.Property ?? post.Property;
 
-            var updatedPostDetail = _mapper.Map<PostDetail>(postUpdateDTO.PostDetail);
-            post.PostDetail = await _unitOfWork.PostDetailRepository.UpdateAsync(updatedPostDetail);
-            await _unitOfWork.PostRepository.UpdateAsync(post);
+            await _postDetailService.UpdatePostDetail(post, postUpdateDTO.PostDetail);
+
             await _unitOfWork.SaveChangesAsync();
+            return true;
+
+        }
+
+        public async Task<PostResponseDTO> GetPostWithDetail(string postId)
+        {
+            // Lấy bài viết từ repository, kèm thông tin User và PostDetail
+            var post = await _unitOfWork.PostRepository.GetPostWithUserAndDetailAsync(postId);
+
+            // Kiểm tra nếu bài viết không tồn tại
+            if (post == null)
+            {
+                throw new ApplicationException("Post not found");
+            }
+            var postDTO = _mapper.Map<PostResponseDTO>(post);
+            return postDTO;
         }
     }
 }

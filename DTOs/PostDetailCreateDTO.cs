@@ -4,7 +4,7 @@ namespace real_estate_api.DTOs
 {
     public class PostDetailCreateDTO
     {
-        public string Description { get; set; } 
+        public string? Description { get; set; } 
         public string? Utilities { get; set; }
         public string? PetPolicy { get; set; }
         public string? IncomeRequirement { get; set; }

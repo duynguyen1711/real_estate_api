@@ -10,5 +10,7 @@ namespace real_estate_api.Interface.Repository
         Task<bool> DeleteAsync(string id);
         Task<IEnumerable<Post>> GetAllWithUsersAndDetailsAsync();
         Task <Post> GetPost(string id);
+        Task<Post> GetPostWithDetailsAsync(string postId);
+        Task<Post> GetPostWithUserAndDetailAsync(string postId);
     }
 }

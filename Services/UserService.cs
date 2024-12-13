@@ -88,7 +88,6 @@ namespace real_estate_api.Services
             user.Email = !string.IsNullOrWhiteSpace(userDTO.Email) ? userDTO.Email : user.Email;
             user.Avatar = !string.IsNullOrWhiteSpace(userDTO.Avatar) ? userDTO.Avatar : user.Avatar;
             user.UpdatedAt = DateTime.Now;
-            await _unitOfWork.UserRepository.UpdateAsync(user);
             await _unitOfWork.SaveChangesAsync();
 
             return _mapper.Map<UserDTO>(user);

@@ -42,6 +42,18 @@ namespace real_estate_api.Controllers
                 return StatusCode(500, new { message = "An error occurred while fetching posts.", details = ex.Message });
             }
         }
+        [HttpGet("{id}")]
+        public async Task <IActionResult> GetPost(string id)
+        {
+            try
+            {
+                var post = await  _postService.GetPostWithDetail(id);
+                return Ok(post);
+            }
+            catch (ApplicationException ex) {
+                return BadRequest(ex.Message); 
+            }
+        }
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreatePost(PostCreateDTO postDTO)
@@ -165,7 +177,7 @@ namespace real_estate_api.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new
                 {
                     status = "error",
-                    message = "An unexpected error occurred. Please try again later."
+                    message = ex.Message
                 });
             }
         }

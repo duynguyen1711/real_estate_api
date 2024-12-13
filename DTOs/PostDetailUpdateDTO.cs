@@ -2,7 +2,7 @@
 {
     public class PostDetailUpdateDTO
     {
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public string? Utilities { get; set; }
         public string? PetPolicy { get; set; }
         public string? IncomeRequirement { get; set; }

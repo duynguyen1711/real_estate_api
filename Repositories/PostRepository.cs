@@ -50,6 +50,20 @@ namespace real_estate_api.Repositories
         {
             return await _context.Posts.FirstOrDefaultAsync(u => u.Id == id);
         }
+        public async Task<Post> GetPostWithDetailsAsync(string postId)
+        {
+            return await _context.Posts.Include(p => p.PostDetail)
+                                        .FirstOrDefaultAsync(p => p.Id == postId);
+        }
+        public async Task<Post> GetPostWithUserAndDetailAsync(string postId)
+        {
+            return await _context.Posts
+                .Where(p => p.Id == postId) 
+                .Include(p => p.User) 
+                .Include(p => p.PostDetail) 
+                .FirstOrDefaultAsync(); 
+        }
+
 
         public async Task UpdateAsync(Post post)
         {

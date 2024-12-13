@@ -14,6 +14,13 @@ namespace real_estate_api
             CreateMap<PostDetailCreateDTO, PostDetail>();
             CreateMap<PostUpdateDTO, Post>();
             CreateMap<PostDetailUpdateDTO, PostDetail>();
+            CreateMap<Post, PostResponseDTO>();
+            // Ánh xạ từ User sang UserDTOForPost
+            CreateMap<User, UserDTOForPost>();
+                
+            // Ánh xạ từ PostDetail sang PostDetailCreateDTO
+            CreateMap<PostDetail, PostDetailCreateDTO>();
+               
 
         }
     }
