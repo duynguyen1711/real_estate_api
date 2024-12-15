@@ -56,7 +56,7 @@ namespace real_estate_api.Controllers
         }
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> CreatePost(PostCreateDTO postDTO)
+        public async Task<IActionResult> CreatePost([FromBody] PostCreateDTO postDTO)
         {
             try
             {
@@ -69,7 +69,14 @@ namespace real_estate_api.Controllers
                         message = "User is not authorized."
                     });
                 }
-               
+                if (string.IsNullOrEmpty(postDTO.Address))
+                {
+                    return BadRequest(new
+                    {
+                        status = "error",
+                        message = "Address is required."
+                    });
+                }
                 await _postService.AddPostAsync(postDTO, userId);
                 return Ok(new
                 {

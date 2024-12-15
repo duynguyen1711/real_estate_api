@@ -2,7 +2,7 @@
 {
     public enum PostType
     {
-        Buy,
-        Rent
+        Rent = 0,
+        Buy = 1
     }
 }

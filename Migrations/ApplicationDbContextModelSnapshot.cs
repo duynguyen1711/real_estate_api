@@ -79,7 +79,7 @@ namespace real_estate_api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Posts");
+                    b.ToTable("Posts", (string)null);
                 });
 
             modelBuilder.Entity("real_estate_api.Models.PostDetail", b =>
@@ -121,7 +121,7 @@ namespace real_estate_api.Migrations
                     b.HasIndex("PostId")
                         .IsUnique();
 
-                    b.ToTable("PostDetails");
+                    b.ToTable("PostDetails", (string)null);
                 });
 
             modelBuilder.Entity("real_estate_api.Models.SavedPost", b =>
@@ -147,7 +147,7 @@ namespace real_estate_api.Migrations
                     b.HasIndex("UserId", "PostId")
                         .IsUnique();
 
-                    b.ToTable("SavedPosts");
+                    b.ToTable("SavedPosts", (string)null);
                 });
 
             modelBuilder.Entity("real_estate_api.Models.User", b =>
@@ -178,7 +178,7 @@ namespace real_estate_api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("real_estate_api.Models.Post", b =>

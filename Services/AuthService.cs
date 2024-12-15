@@ -61,7 +61,8 @@ namespace real_estate_api.Services
                 Token = token,
                 Id = existingUserByUsername.Id,
                 Username = existingUserByUsername.Username,
-                Email = existingUserByUsername.Email
+                Email = existingUserByUsername.Email,
+                Avatar = existingUserByUsername.Avatar,
 
             };
         }

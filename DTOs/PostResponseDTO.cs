@@ -8,7 +8,7 @@ namespace real_estate_api.DTOs
         public string Id { get; set; } 
         public string Title { get; set; }
         public int Price { get; set; }
-        public List<string> Images { get; set; } = new List<string>();
+        public List<string> Images { get; set; }
         public string Address { get; set; } 
         public string City { get; set; } 
         public int Bedroom { get; set; }

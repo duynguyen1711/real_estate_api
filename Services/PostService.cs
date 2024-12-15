@@ -25,11 +25,38 @@ namespace real_estate_api.Services
         public async Task AddPostAsync(PostCreateDTO postDTO, string id)
         {
 
-            var post = _mapper.Map<Post>(postDTO);
-            post.UserId = id;
-            post.CreatedAt = DateTime.Now;
-            await _unitOfWork.PostRepository.AddAsync(post);
-            await _unitOfWork.SaveChangesAsync();
+            try
+            {
+                // Kiểm tra dữ liệu đầu vào trước khi thêm
+                if (postDTO == null)
+                {
+                    throw new ArgumentNullException(nameof(postDTO), "Post data cannot be null");
+                }
+
+                var post = _mapper.Map<Post>(postDTO);
+                post.UserId = id;
+                post.CreatedAt = DateTime.Now;
+
+                // Nếu cần, bạn có thể thêm các bước validate ở đây
+                // Ví dụ: Kiểm tra dữ liệu có hợp lệ hay không, nếu không ném lỗi.
+
+                // Thêm bài đăng vào database
+                await _unitOfWork.PostRepository.AddAsync(post);
+
+                // Lưu thay đổi vào cơ sở dữ liệu
+                await _unitOfWork.SaveChangesAsync();
+            }
+            catch (DbUpdateException dbEx)
+            {
+                // Xử lý các lỗi khi lưu vào cơ sở dữ liệu
+         
+                throw new ApplicationException("An error occurred while saving the post. Please try again later.");
+            }
+            catch (Exception ex)
+            {
+                // Xử lý các lỗi chung khác
+                throw new ApplicationException("An unexpected error occurred. Please try again later.");
+            }
 
 
 
@@ -106,6 +133,7 @@ namespace real_estate_api.Services
                     Id = post.Id,
                     Title = post.Title,
                     Price = post.Price,
+                    Images =post.Images,
                     Address = post.Address,
                     City = post.City,
                     Bedroom = post.Bedroom,

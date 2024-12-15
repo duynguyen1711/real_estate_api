@@ -16,7 +16,7 @@ namespace real_estate_api.Repositories
 
         public async Task AddAsync(Post post)
         {
-           await _context.Posts.AddAsync(post);
+            await _context.Posts.AddAsync(post);
         }
 
         public async Task<bool> DeleteAsync(string id)
@@ -42,7 +42,9 @@ namespace real_estate_api.Repositories
             return await _context.Posts
                 .Include(p => p.User) // Thêm thông tin User
                 .Include(p => p.PostDetail) // Thêm chi tiết bài đăng
+                .OrderByDescending(p => p.CreatedAt)
                 .ToListAsync();
+
 
         }
 

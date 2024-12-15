@@ -2,9 +2,9 @@
 {
     public enum PropertyType
     {
-        Apartment,
-        House,
-        Condo,
-        Land
+        Apartment = 0,
+        House = 1,
+        Condo = 2,
+        Land = 3
     }
 }
