@@ -36,6 +36,41 @@ namespace real_estate_api.Helpers
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-        
+        public bool ValidateToken(string token)
+        {
+            try
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.UTF8.GetBytes(_secretKey);
+
+                // Cấu hình các tham số kiểm tra token
+                var tokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidIssuer = _issuer,
+                    ValidAudience = _audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(key)
+                };
+
+                // Xác minh token
+                tokenHandler.ValidateToken(token, tokenValidationParameters, out var validatedToken);
+
+                // Nếu token hợp lệ, trả về true
+                return validatedToken != null;
+            }
+            catch (SecurityTokenException)
+            {
+                // Nếu có lỗi trong việc xác thực, token không hợp lệ
+                return false;
+            }
+            catch (Exception)
+            {
+                // Các lỗi khác, có thể là lỗi xử lý, token hết hạn, v.v.
+                return false;
+            }
+        }
+
     }
 }

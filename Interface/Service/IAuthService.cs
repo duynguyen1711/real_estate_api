@@ -6,5 +6,6 @@ namespace real_estate_api.Interface.Service
     {
         Task<bool> RegisterAsync(RegisterRequestDTO userDto);
         Task<LoginResponseDTO> LoginAsync(LoginRequestDTO login);
+        public bool VerifyToken(string token);
     }
 }

@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using real_estate_api.Data;
+using real_estate_api.Enums;
 using real_estate_api.Interface.Repository;
 using real_estate_api.Models;
 
@@ -37,15 +39,55 @@ namespace real_estate_api.Repositories
            return await _context.Posts.ToListAsync();
         }
 
-        public async Task<IEnumerable<Post>> GetAllWithUsersAndDetailsAsync()
+        public async Task<IEnumerable<Post>> GetAllWithUsersAndDetailsAsync(Query query)
         {
-            return await _context.Posts
-                .Include(p => p.User) // Thêm thông tin User
-                .Include(p => p.PostDetail) // Thêm chi tiết bài đăng
-                .OrderByDescending(p => p.CreatedAt)
-                .ToListAsync();
+            var postsQuery = _context.Posts
+             .Include(p => p.User) // Include related User data
+             .Include(p => p.PostDetail) // Include related PostDetail data
+             .OrderByDescending(p => p.CreatedAt) // Default ordering by CreatedAt
+             .AsQueryable();
 
+            if (!string.IsNullOrEmpty(query.City))
+            {
+                postsQuery = postsQuery.Where(p => p.City == query.City);
+            }
 
+            // Apply filtering by type if provided in the query
+            if (!string.IsNullOrEmpty(query.Type))
+            {
+                if (Enum.TryParse<PostType>(query.Type, out var postType))
+                {
+                    postsQuery = postsQuery.Where(p => p.Type == postType);
+                }
+            }
+
+            // Apply filtering by property if provided in the query
+            if (!string.IsNullOrEmpty(query.Property))
+            {
+                // Assuming 'Property' is an enum (replace 'PropertyEnum' with the actual enum type)
+                if (Enum.TryParse<PropertyType>(query.Property, out var property))
+                {
+                    postsQuery = postsQuery.Where(p => p.Property == property);
+                }
+            }
+
+            // Apply filtering by bedroom count if provided in the query
+            if (query.Bedroom.HasValue)
+            {
+                postsQuery = postsQuery.Where(p => p.Bedroom == query.Bedroom.Value);
+            }
+
+            // Apply price range if provided in the query
+            if (query.MinPrice.HasValue)
+            {
+                postsQuery = postsQuery.Where(p => p.Price >= query.MinPrice.Value);
+            }
+
+            if (query.MaxPrice.HasValue)
+            {
+                postsQuery = postsQuery.Where(p => p.Price <= query.MaxPrice.Value);
+            }
+            return await postsQuery.ToListAsync();
         }
 
         public async Task<Post> GetPost(string id)
@@ -64,6 +106,14 @@ namespace real_estate_api.Repositories
                 .Include(p => p.User) 
                 .Include(p => p.PostDetail) 
                 .FirstOrDefaultAsync(); 
+        }
+        public async Task<IEnumerable<Post>> GetPostOfUserAsync(string userId)
+        {
+            return await _context.Posts
+                .Include(p => p.PostDetail)
+                .Where(P => P.UserId == userId)
+                .OrderByDescending(p => p.CreatedAt)
+                .ToListAsync();
         }
 
 

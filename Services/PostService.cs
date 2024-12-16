@@ -8,6 +8,7 @@ using real_estate_api.Interface.Service;
 using real_estate_api.Models;
 using real_estate_api.UnitofWork;
 
+
 namespace real_estate_api.Services
 {
     public class PostService : IPostService
@@ -104,9 +105,9 @@ namespace real_estate_api.Services
 
             return postDTOs;
         }
-        public async Task<IEnumerable<PostResponseDTO>> GetAllPostWithDetailAsync()
+        public async Task<IEnumerable<PostResponseDTO>> GetAllPostWithDetailAsync(Query query)
         {
-            var posts = await _unitOfWork.PostRepository.GetAllWithUsersAndDetailsAsync();
+            var posts = await _unitOfWork.PostRepository.GetAllWithUsersAndDetailsAsync(query);
             var postDTOs = posts.Select(post =>
             {
                 // Kiểm tra null trước khi truy cập thuộc tính
@@ -196,6 +197,13 @@ namespace real_estate_api.Services
                 throw new ApplicationException("Post not found");
             }
             var postDTO = _mapper.Map<PostResponseDTO>(post);
+            return postDTO;
+        }
+
+        public async Task<List<PostResponseDTO>> GetPostOfUserAsync(string userId)
+        {
+            var post = await _unitOfWork.PostRepository.GetPostOfUserAsync(userId);
+            var postDTO = _mapper.Map<List<PostResponseDTO>>(post);
             return postDTO;
         }
     }

@@ -66,6 +66,11 @@ namespace real_estate_api.Services
 
             };
         }
+        public bool VerifyToken(string token)
+        {
+            // Gọi ValidateToken từ JwtHelper để kiểm tra tính hợp lệ của token
+            return _jwtHelper.ValidateToken(token);
+        }
 
     }
 }

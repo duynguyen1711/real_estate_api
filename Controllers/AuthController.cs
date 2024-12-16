@@ -60,7 +60,8 @@ namespace real_estate_api.Controllers
                     HttpOnly = true,  // Đảm bảo cookie chỉ có thể được truy cập bởi server, không qua JavaScript
                     Secure = false,    
                     SameSite = SameSiteMode.Strict,  // Chế độ bảo vệ cho cookie, tránh bị lộ khi gửi request từ domain khác
-                    Expires = DateTime.UtcNow.AddDays(1)  // Thời gian hết hạn của cookie, 1 ngày trong trường hợp này
+                    Expires = DateTime.UtcNow.AddDays(1),// Thời gian hết hạn của cookie, 1 ngày trong trường hợp này
+                    Path = "/"
                 };
 
                 // Xóa cookie cũ nếu có
@@ -101,6 +102,29 @@ namespace real_estate_api.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+        [HttpGet("verify-token")]
+        public IActionResult VerifyToken()
+        {
+            var token = Request.Cookies["auth_token"];
+            if (token == null)
+            {
+                return Unauthorized("Token not found");
+            }
+
+            var isValid = _authService.VerifyToken(token); 
+            if (isValid)
+            {
+                return Ok(new { 
+                    message = "Token is valid",
+                    isLogin = true
+                });
+            }
+            else
+            {
+                return Unauthorized("Token is invalid or expired");
+            }
+        }
+
 
 
     }

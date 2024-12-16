@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using real_estate_api.DTOs;
 using real_estate_api.Interface.Service;
+using real_estate_api.Models;
 using System.Security.Claims;
+
 
 namespace real_estate_api.Controllers
 {
@@ -18,12 +20,12 @@ namespace real_estate_api.Controllers
             _logger = logger;
         }
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PostResponseDTO>>> GetAllPosts()
+        public async Task<ActionResult<IEnumerable<PostResponseDTO>>> GetAllPosts([FromQuery] Query query)
         {
             try
             {
                 // Lấy danh sách bài đăng với chi tiết người dùng và bài đăng
-                var posts = await _postService.GetAllPostWithDetailAsync();
+                var posts = await _postService.GetAllPostWithDetailAsync(query);
 
                 // Kiểm tra nếu danh sách rỗng
                 if (posts == null || !posts.Any())
@@ -55,6 +57,22 @@ namespace real_estate_api.Controllers
             }
         }
         [Authorize]
+        [HttpGet("post-of-user")]
+        public async Task<IActionResult> GetPostOfUser()
+        {
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+            {
+                return Unauthorized(new
+                {
+                    status = "error",
+                    message = "User is not authorized."
+                });
+            }
+            var post = await _postService.GetPostOfUserAsync(userId);
+            return Ok(post);
+        }
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreatePost([FromBody] PostCreateDTO postDTO)
         {
@@ -67,14 +85,6 @@ namespace real_estate_api.Controllers
                     {
                         status = "error",
                         message = "User is not authorized."
-                    });
-                }
-                if (string.IsNullOrEmpty(postDTO.Address))
-                {
-                    return BadRequest(new
-                    {
-                        status = "error",
-                        message = "Address is required."
                     });
                 }
                 await _postService.AddPostAsync(postDTO, userId);

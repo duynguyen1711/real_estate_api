@@ -8,9 +8,10 @@ namespace real_estate_api.Interface.Repository
         Task AddAsync(Post post);
         Task UpdateAsync(Post post);
         Task<bool> DeleteAsync(string id);
-        Task<IEnumerable<Post>> GetAllWithUsersAndDetailsAsync();
+        Task<IEnumerable<Post>> GetAllWithUsersAndDetailsAsync(Query query);
         Task <Post> GetPost(string id);
         Task<Post> GetPostWithDetailsAsync(string postId);
         Task<Post> GetPostWithUserAndDetailAsync(string postId);
+        Task<IEnumerable<Post>> GetPostOfUserAsync(string userId);
     }
 }
