@@ -9,6 +9,7 @@ namespace real_estate_api.Interface.Service
         Task<SavedPost> FindSavedPost(string userId, string postId);
         Task<bool> DeleteSavedPost(string userId, string postId);
         Task<List<SavedPostDTOResponse>> GetListSavedPostOfUser(string userId);
+        Task <bool> IsSavedPost(string userId, string postId);
 
     }
 }

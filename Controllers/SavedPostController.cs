@@ -64,7 +64,7 @@ namespace real_estate_api.Controllers
             }
         }
         [Authorize]
-        [HttpDelete]
+        [HttpDelete("{postId}")]
         public async Task<IActionResult> DeleteSavedPost(string postId)
         {
             var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
@@ -153,6 +153,30 @@ namespace real_estate_api.Controllers
                 });
             }
         }
+        [HttpGet("is-saved")]
+        public async Task<IActionResult> IsSavedPost(string postId, string  userId)
+        {
+            try
+            {
+                var savedPost = await _savedPostService.IsSavedPost(userId, postId);
+
+                if (savedPost)
+                {
+                    // Nếu có bài đăng đã lưu, trả về true
+                    return Ok(new { isSaved = true });
+                }
+
+                // Nếu không có bài đăng đã lưu, trả về false
+                return Ok(new { isSaved = false });
+            }
+            catch (Exception ex)
+            {
+                // Xử lý lỗi nếu có
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
+
     }
 }
+
    

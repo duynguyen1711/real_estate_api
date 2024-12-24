@@ -91,9 +91,22 @@ namespace real_estate_api.Services
                 Address = post.Post.Address,
                 Bedroom = post.Post.Bedroom,
                 Bathroom = post.Post.Bathroom,
+                Images = post.Post.Images,
+                isSaved = true
             }).ToList();
 
             return postListDTO;
+        }
+
+        public async Task<bool> IsSavedPost(string userId, string postId)
+        {
+            var existingSavedPost = await _unitOfWork.SavedPostRepository
+                .GetSavedPost(userId, postId);
+            if (existingSavedPost == null)
+            {
+                return false;
+            }
+            return true;
         }
     }
 }
