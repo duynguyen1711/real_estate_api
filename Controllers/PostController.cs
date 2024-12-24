@@ -32,7 +32,7 @@ namespace real_estate_api.Controllers
                 {
                     return NoContent(); // Nếu không có bài đăng, trả về NoContent
                 }
-
+                
                 return Ok(posts); // Trả về danh sách bài đăng với chi tiết
             }
             catch (Exception ex)

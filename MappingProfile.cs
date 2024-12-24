@@ -20,6 +20,8 @@ namespace real_estate_api
                 
             // Ánh xạ từ PostDetail sang PostDetailCreateDTO
             CreateMap<PostDetail, PostDetailCreateDTO>();
+
+            CreateMap<SavedPostDTO, SavedPost>();
                
 
         }

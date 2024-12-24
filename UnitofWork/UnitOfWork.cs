@@ -12,6 +12,7 @@ namespace real_estate_api.UnitofWork
         private IUserRepository _userRepository;
         private IPostRepository _postRepository;
         private IPostDetailRepository _postDetailRepository;
+        private ISavedPostRepository _savedPostRepository;
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
@@ -19,6 +20,7 @@ namespace real_estate_api.UnitofWork
         public IUserRepository UserRepository => _userRepository ??= new UserRepository(_context);
         public IPostRepository PostRepository => _postRepository ??= new PostRepository(_context);
         public IPostDetailRepository PostDetailRepository => _postDetailRepository ??= new PostDetailRepository(_context);
+        public ISavedPostRepository SavedPostRepository => _savedPostRepository ??= new SavedPostRepository(_context);
 
 
         public async Task SaveChangesAsync()
