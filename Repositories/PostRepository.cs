@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Hosting;
 using real_estate_api.Data;
 using real_estate_api.Enums;
 using real_estate_api.Interface.Repository;
@@ -23,14 +24,29 @@ namespace real_estate_api.Repositories
 
         public async Task<bool> DeleteAsync(string id)
         {
-            var post = await _context.Posts.FindAsync(id);
-            if (post != null)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                _context.Posts.Remove(post);
-                await _context.SaveChangesAsync();
-                return true;
+                var post = await _context.Posts
+                                .Include(p => p.SavedPosts) // Bao gồm SavedPosts liên quan
+                                .FirstOrDefaultAsync(p => p.Id == id);
+                if (post != null)
+                {
+                    _context.SavedPosts.RemoveRange(post.SavedPosts);
+                    _context.Posts.Remove(post);
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                    return true;
+                }
+                return false;
             }
-            return false;
+           
+            catch (Exception)
+    {
+                // Hoàn tác giao dịch nếu có lỗi
+                await transaction.RollbackAsync();
+                throw; // Ném lại ngoại lệ để xử lý ở nơi khác
+            }
         }
         
 

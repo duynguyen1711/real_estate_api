@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using real_estate_api.DTOs;
 using real_estate_api.Interface.Service;
@@ -121,6 +122,34 @@ namespace real_estate_api.Controllers
                 {
                     status = "error",
                     message = "An error occurred while processing your request."
+                });
+            }
+        }
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> GetSavedPostOfUser()
+        {
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+            {
+                return Unauthorized(new
+                {
+                    status = "error",
+                    message = "User is not authorized."
+                });
+            }
+            try
+            {
+                var post = await _savedPostService.GetListSavedPostOfUser(userId);
+                return Ok(post);
+            }
+            catch (ApplicationException appEx) {
+                _logger.LogError(appEx, "Application error occurred while fetch post");
+
+                return BadRequest(new
+                {
+                    status = "error",
+                    message = appEx.Message // Trả về thông báo lỗi từ ApplicationException
                 });
             }
         }

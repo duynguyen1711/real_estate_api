@@ -23,7 +23,13 @@ namespace real_estate_api.Repositories
             _context.SavedPosts.Remove(savedPost);
         }
 
-       
+        public async Task<List<SavedPost>> GetListSavedPostOfUser(string userID)
+        {
+            return await _context.SavedPosts
+            .Where(sp => sp.UserId == userID)  
+            .Include(sp => sp.Post)  
+            .ToListAsync();
+        }
 
         public async Task<SavedPost> GetSavedPost(string userID, string PostId)
         {

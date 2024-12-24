@@ -8,5 +8,6 @@ namespace real_estate_api.Interface.Repository
         Task AddSavedPost(SavedPost savedPost);
         Task DeleteSavedPost(SavedPost savedPost);
         Task<SavedPost> GetSavedPost(string userID, string PostId);
+        Task<List<SavedPost>> GetListSavedPostOfUser(string userID);
     }
 }

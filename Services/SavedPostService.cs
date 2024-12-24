@@ -66,5 +66,34 @@ namespace real_estate_api.Services
                 .GetSavedPost(userId, postId); 
             return existingSavedPost;
         }
+
+        public async Task<List<SavedPostDTOResponse>> GetListSavedPostOfUser(string userId)
+        {
+            var user = await  _unitOfWork.UserRepository.GetByIdAsync(userId);
+            if (user == null)
+            {
+                throw new ApplicationException("User not found");
+            }
+            var postList = await _unitOfWork.SavedPostRepository.GetListSavedPostOfUser(userId);
+
+            // Nếu không có bài viết đã lưu
+            if (postList == null || !postList.Any())
+            {
+                throw new ApplicationException("No saved posts found for the user");
+            }
+
+            // Ánh xạ SavedPost sang SavedPostDTOResponse
+            var postListDTO = postList.Select(post => new SavedPostDTOResponse
+            {
+                Id = post.Post.Id,
+                Title = post.Post.Title,
+                Price = post.Post.Price,
+                Address = post.Post.Address,
+                Bedroom = post.Post.Bedroom,
+                Bathroom = post.Post.Bathroom,
+            }).ToList();
+
+            return postListDTO;
+        }
     }
 }

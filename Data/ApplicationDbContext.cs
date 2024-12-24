@@ -19,14 +19,15 @@ namespace real_estate_api.Data
             modelBuilder.Entity<Post>()
                 .HasOne(p => p.PostDetail)
                 .WithOne(pd => pd.Post)
-                .HasForeignKey<PostDetail>(pd => pd.PostId);
+                .HasForeignKey<PostDetail>(pd => pd.PostId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             // Mối quan hệ giữa User và SavedPost (1 - N)
             modelBuilder.Entity<SavedPost>()
                 .HasOne(sp => sp.User)
                 .WithMany(u => u.SavedPosts)
                 .HasForeignKey(sp => sp.UserId)
-                .OnDelete(DeleteBehavior.NoAction); 
+                .OnDelete(DeleteBehavior.Cascade); 
 
             // Mối quan hệ giữa Post và SavedPost (1 - N)
             modelBuilder.Entity<SavedPost>()
@@ -44,7 +45,8 @@ namespace real_estate_api.Data
             modelBuilder.Entity<Post>()
                 .HasOne(p => p.User)
                 .WithMany(u => u.Posts)
-                .HasForeignKey(p => p.UserId);
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             // Cấu hình Enum Type cho Post
             modelBuilder.Entity<Post>()

@@ -1,4 +1,5 @@
 ﻿using real_estate_api.Enums;
+using System.Text.Json.Serialization;
 
 namespace real_estate_api.Models
 {
@@ -20,6 +21,7 @@ namespace real_estate_api.Models
         public string UserId { get; set; }
         public User User { get; set; }
         public PostDetail? PostDetail { get; set; } // Navigation Property
+        [JsonIgnore]
         public List<SavedPost> SavedPosts { get; set; } = new List<SavedPost>();
     }
 }

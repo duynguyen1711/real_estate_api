@@ -8,6 +8,7 @@ namespace real_estate_api.Interface.Service
         Task AddSavedPostAsync(SavedPostDTO savedPostDTO,string userId);
         Task<SavedPost> FindSavedPost(string userId, string postId);
         Task<bool> DeleteSavedPost(string userId, string postId);
+        Task<List<SavedPostDTOResponse>> GetListSavedPostOfUser(string userId);
 
     }
 }
