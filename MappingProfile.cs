@@ -22,7 +22,12 @@ namespace real_estate_api
             CreateMap<PostDetail, PostDetailCreateDTO>();
 
             CreateMap<SavedPostDTO, SavedPost>();
-               
+            CreateMap<Chat, ChatDTOResponse>()
+           .ForMember(dest => dest.UserIDs, opt => opt.MapFrom(src => src.ChatUsers.Select(cu => cu.UserId).ToList()))  // ánh xạ từ ChatUser để lấy danh sách userId
+           .ForMember(dest => dest.SeenBy, opt => opt.MapFrom(src => src.SeenByUsers.Select(sb => sb.UserId).ToList())) // ánh xạ từ ChatSeenBy để lấy danh sách người đã xem
+           .ForMember(dest => dest.LastMessage, opt => opt.MapFrom(src => src.LastMessage))
+           .ForMember(dest => dest.Messages, opt => opt.MapFrom(src => src.Messages)); // ánh xạ danh sách messages
+
 
         }
     }

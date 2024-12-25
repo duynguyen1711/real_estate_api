@@ -24,6 +24,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IPostDetailService, PostDetailService>();
 builder.Services.AddScoped<ISavedPostService, SavedPostService>();
+builder.Services.AddScoped<IChatService, ChatService>();
+
 
 
 builder.Services.AddControllers();
