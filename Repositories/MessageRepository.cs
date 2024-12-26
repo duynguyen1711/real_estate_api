@@ -1,4 +1,5 @@
-﻿using real_estate_api.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using real_estate_api.Data;
 using real_estate_api.DTOs;
 using real_estate_api.Interface.Repository;
 using real_estate_api.Models;
@@ -30,6 +31,21 @@ namespace real_estate_api.Repositories
                 ChatId = msRequest.ChatId, 
             };
             await _context.Messages.AddAsync(message);
+            var chatSeenByList = await _context.ChatSeenBy
+            .Where(cs => cs.ChatId == msRequest.ChatId)
+            .ToListAsync();
+
+            // Update the IsSeen flag
+            foreach (var chatSeenBy in chatSeenByList)
+            {
+                // Set IsSeen to true for sender and false for others
+                chatSeenBy.IsSeen = chatSeenBy.UserId == userId;
+                chatSeenBy.SeenAt = chatSeenBy.UserId == userId ? DateTime.UtcNow : chatSeenBy.SeenAt;
+            }
+
+            // Update ChatSeenBy entities in the context
+            _context.ChatSeenBy.UpdateRange(chatSeenByList);
+            await _context.SaveChangesAsync();
             return message;
         }
     }

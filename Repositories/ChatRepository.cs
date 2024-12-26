@@ -54,11 +54,15 @@ namespace real_estate_api.Repositories
                     UserId = userId
                 };
                 _context.ChatUsers.Add(chatUser);
+                var chatSeenBy = new ChatSeenBy
+                {
+                    ChatId = chat.Id,
+                    UserId = userId
+                };
+                _context.ChatSeenBy.Add(chatSeenBy);
             }
-
             return chat;
         }
-
         public async Task<Chat> GetChatAsync(string chatId)
         {
             return await _context.Chats
@@ -68,6 +72,25 @@ namespace real_estate_api.Repositories
                 .Include(c => c.Messages)
                 .FirstOrDefaultAsync();
         }
+        public async Task<Chat> GetChatByUserAsync(string chatId,string userId )
+        {
+            var chat = await _context.Chats
+               .Where(c => c.Id == chatId && c.ChatUsers.Any(cu => cu.UserId == userId))
+               .Include(c => c.ChatUsers) // Bao gồm thông tin người dùng trong cuộc trò chuyện
+                   .ThenInclude(cu => cu.User)
+               .Include(c => c.Messages)
+               .Include(c => c.SeenByUsers)
+                   .ThenInclude(sbu => sbu.User)
+               .FirstOrDefaultAsync();
+
+            // Kiểm tra nếu không tìm thấy chat (chat == null)
+            if (chat == null)
+            {
+                return null;  
+            }
+
+            return chat;
+        }
 
         public async Task<List<Chat>> GetChatsAsync()
         {
@@ -76,6 +99,15 @@ namespace real_estate_api.Repositories
                 .ThenInclude(cu => cu.User)
             .Include(c => c.Messages)
             .ToListAsync();
+        }
+        public async Task<List<Chat>> GetChatsByUserAsync(string userId)
+        {
+            return await _context.Chats
+                .Where(c => c.ChatUsers.Any(cu => cu.UserId == userId)) // Lọc các cuộc trò chuyện mà người dùng tham gia
+                .Include(c => c.ChatUsers)
+                    .ThenInclude(cu => cu.User) // Bao gồm thông tin người dùng trong mỗi cuộc trò chuyện
+                .Include(c => c.Messages) // Bao gồm các tin nhắn trong mỗi cuộc trò chuyện
+                .ToListAsync();
         }
     }
 }

@@ -55,10 +55,14 @@ namespace real_estate_api.Services
             }
         }
 
-        public async Task<ChatDTOResponse> GetChatAsync(string chatId)
+        public async Task<ChatDTOResponse> GetChatAsync(string chatId, string userId)
         {
-            var chat = await _unitOfWork.ChatRepository.GetChatAsync(chatId);
+            var chat = await _unitOfWork.ChatRepository.GetChatByUserAsync(chatId, userId);
             // Gọi repository để lấy chat với chatId
+            if (chat == null)
+            {
+                throw new ArgumentException("Chat not found or you are not authorized to access it.");
+            }
             var chatDTO = new ChatDTOResponse
             {
                 Id = chat.Id,
@@ -80,9 +84,9 @@ namespace real_estate_api.Services
             return chatDTO;
         }
 
-        public async Task<List<ChatDTOResponse>> GetChatsAsync()
+        public async Task<List<ChatDTOResponse>> GetChatsAsync(string userId)
         {
-            var chatList = await _unitOfWork.ChatRepository.GetChatsAsync();
+            var chatList = await _unitOfWork.ChatRepository.GetChatsByUserAsync(userId);
 
             // Ánh xạ từ model Chat sang ChatDTOResponse
             var chatDTOList = chatList.Select(chat => new ChatDTOResponse

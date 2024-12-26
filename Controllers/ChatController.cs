@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using real_estate_api.DTOs;
 using real_estate_api.Interface.Service;
@@ -6,8 +7,10 @@ using System.Security.Claims;
 
 namespace real_estate_api.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/chats")]
+    
     public class ChatController : ControllerBase
     {
         private readonly IChatService _chatService;
@@ -16,7 +19,7 @@ namespace real_estate_api.Controllers
         {
             _chatService = chatService;
         }
-        [Authorize]
+        
         [HttpPost("create")]
         public async Task<IActionResult> CreateChat([FromBody] CreateChatRequest request)
         {
@@ -64,18 +67,51 @@ namespace real_estate_api.Controllers
         [HttpGet("{chatId}")]
         public async Task<IActionResult> GetChat(string chatId)
         {
-            var chat = await _chatService.GetChatAsync(chatId);
-            if (chat == null)
+            var currentUserId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (currentUserId == null)
             {
-                return NotFound();
+                return Unauthorized(new
+                {
+                    status = "error",
+                    message = "User is not authorized."
+                });
             }
-            return Ok(chat);
+            try
+            {
+                var chat = await _chatService.GetChatAsync(chatId, currentUserId);
+                if (chat == null)
+                {
+                    return NotFound(new
+                    {
+                        status = "error",
+                        message = "Chat not found or you are not authorized to access it."
+                    });
+                }
+                return Ok(chat);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new
+                {
+                    status = "error",
+                    message = ex.Message
+                });
+            }      
         }
 
         [HttpGet]
         public async Task<IActionResult> GetChats()
         {
-            var chats = await _chatService.GetChatsAsync();
+            var currentUserId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (currentUserId == null)
+            {
+                return Unauthorized(new
+                {
+                    status = "error",
+                    message = "User is not authorized."
+                });
+            }
+            var chats = await _chatService.GetChatsAsync(currentUserId);
             return Ok(chats);
         }
     }
