@@ -106,7 +106,9 @@ namespace real_estate_api.Repositories
                 .Where(c => c.ChatUsers.Any(cu => cu.UserId == userId)) // Lọc các cuộc trò chuyện mà người dùng tham gia
                 .Include(c => c.ChatUsers)
                     .ThenInclude(cu => cu.User) // Bao gồm thông tin người dùng trong mỗi cuộc trò chuyện
-                .Include(c => c.Messages) // Bao gồm các tin nhắn trong mỗi cuộc trò chuyện
+                .Include(c => c.Messages)
+                .Include(c => c.SeenByUsers)
+                   .ThenInclude(sbu => sbu.User)
                 .ToListAsync();
         }
     }

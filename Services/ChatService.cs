@@ -43,7 +43,7 @@ namespace real_estate_api.Services
                         ChatId = msg.ChatId
                     }).ToList(),  // Nếu muốn, có thể ánh xạ các thông tin liên quan đến messages
                     UserIDs = chat.ChatUsers.Select(cu => cu.UserId).ToList(),
-                    SeenBy = chat.SeenByUsers.Select(sb => sb.UserId).ToList()
+                    SeenBy = chat.SeenByUsers.Select(sbu => sbu.UserId).ToList()
                 };
 
 
@@ -92,9 +92,12 @@ namespace real_estate_api.Services
             var chatDTOList = chatList.Select(chat => new ChatDTOResponse
             {
                 Id = chat.Id,
-                UserIDs = chat.ChatUsers.Select(cu => cu.UserId).ToList(), // Trích xuất chỉ UserId
+                UserIDs = chat.ChatUsers.Select(cu => cu.UserId).ToList(), 
                 CreatedAt = chat.CreatedAt,
-                SeenBy = chat.SeenByUsers.Select(s => s.UserId).ToList(), // Trích xuất danh sách UserId đã xem
+                SeenBy = chat.SeenByUsers
+                    .Where(s => s.IsSeen == true)
+                    .Select(s => s.UserId)
+                    .ToList(), // Trích xuất danh sách UserId đã xem
                 LastMessage = chat.LastMessage,
                 Messages = chat.Messages.Select(msg => new MessageResponeDTO
                 {
