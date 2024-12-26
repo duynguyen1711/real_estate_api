@@ -27,7 +27,7 @@ namespace real_estate_api.Repositories
             var existingChat = await _context.ChatUsers
                 .Where(cu => userIds.Contains(cu.UserId))
                 .GroupBy(cu => cu.ChatId)
-                .Where(g => g.All(cu => userIds.Contains(cu.UserId)))  // Kiểm tra nếu tất cả người dùng trong nhóm có trong danh sách userIds
+                .Where(g => g.Count() == userIds.Count && g.All(cu => userIds.Contains(cu.UserId))) // Kiểm tra nếu tất cả người dùng trong nhóm có trong danh sách userIds
                 .Select(g => g.Key)
                 .FirstOrDefaultAsync();
 
@@ -106,10 +106,38 @@ namespace real_estate_api.Repositories
                 .Where(c => c.ChatUsers.Any(cu => cu.UserId == userId)) // Lọc các cuộc trò chuyện mà người dùng tham gia
                 .Include(c => c.ChatUsers)
                     .ThenInclude(cu => cu.User) // Bao gồm thông tin người dùng trong mỗi cuộc trò chuyện
-                .Include(c => c.Messages)
+                .Include(c => c.Messages.OrderByDescending(m => m.CreatedAt))
                 .Include(c => c.SeenByUsers)
                    .ThenInclude(sbu => sbu.User)
+                .OrderByDescending(c => c.Messages.Max(m => m.CreatedAt))
                 .ToListAsync();
+        }
+
+        public async Task MarkChatAsReadAsync(string chatId, string userId)
+        {
+            var chatSeen = await _context.ChatSeenBy
+                .FirstOrDefaultAsync(csb => csb.ChatId == chatId && csb.UserId == userId);
+            if (chatSeen != null)
+            {
+                // Cập nhật trạng thái IsSeen
+                chatSeen.IsSeen = true;
+                chatSeen.SeenAt = DateTime.UtcNow;
+
+                // Lưu thay đổi
+                
+            }
+            else
+            {
+                // Nếu chưa có, tạo bản ghi mới
+                _context.ChatSeenBy.Add(new ChatSeenBy
+                {    
+                    ChatId = chatId,
+                    UserId = userId,
+                    IsSeen = true,
+                });
+
+              
+            }
         }
     }
 }

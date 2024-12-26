@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using real_estate_api.DTOs;
 using real_estate_api.Interface.Service;
 using real_estate_api.Models;
@@ -43,7 +44,10 @@ namespace real_estate_api.Services
                         ChatId = msg.ChatId
                     }).ToList(),  // Nếu muốn, có thể ánh xạ các thông tin liên quan đến messages
                     UserIDs = chat.ChatUsers.Select(cu => cu.UserId).ToList(),
-                    SeenBy = chat.SeenByUsers.Select(sbu => sbu.UserId).ToList()
+                    SeenBy = chat.SeenByUsers
+                    .Where(s => s.IsSeen == true)
+                    .Select(s => s.UserId)
+                    .ToList()
                 };
 
 
@@ -77,7 +81,10 @@ namespace real_estate_api.Services
                     ChatId = msg.ChatId
                 }).ToList(),
                 UserIDs = chat.ChatUsers.Select(cu => cu.UserId).ToList(),
-                SeenBy = chat.SeenByUsers.Select(sb => sb.UserId).ToList()
+                SeenBy =  chat.SeenByUsers
+                    .Where(s => s.IsSeen == true)
+                    .Select(s => s.UserId)
+                    .ToList()
             };
 
 
@@ -110,6 +117,13 @@ namespace real_estate_api.Services
             }).ToList();
 
             return chatDTOList;
+        }
+
+        public async Task MarkChatAsReadAsync(string chatId, string userId)
+        {           
+            // Cập nhật trạng thái `IsSeen` trong bảng ChatSeenBy
+            await _unitOfWork.ChatRepository.MarkChatAsReadAsync(chatId, userId);
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 }

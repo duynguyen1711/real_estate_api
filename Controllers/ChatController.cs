@@ -114,5 +114,30 @@ namespace real_estate_api.Controllers
             var chats = await _chatService.GetChatsAsync(currentUserId);
             return Ok(chats);
         }
+        [HttpPut("read/{chatId}")]
+        public async Task<IActionResult> MarkChatAsRead(string chatId)
+        {
+            // Lấy userId từ JWT token
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { message = "User is not authenticated." });
+            }
+
+            try
+            {
+                // Gọi service để xử lý
+                await _chatService.MarkChatAsReadAsync(chatId, userId);
+
+                return Ok(new { 
+                    message = "Chat marked as read successfully.",
+                    status = "success"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }
