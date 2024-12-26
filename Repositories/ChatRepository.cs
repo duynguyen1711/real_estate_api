@@ -78,7 +78,7 @@ namespace real_estate_api.Repositories
                .Where(c => c.Id == chatId && c.ChatUsers.Any(cu => cu.UserId == userId))
                .Include(c => c.ChatUsers) // Bao gồm thông tin người dùng trong cuộc trò chuyện
                    .ThenInclude(cu => cu.User)
-               .Include(c => c.Messages)
+               .Include(c => c.Messages.OrderByDescending(m => m.CreatedAt))
                .Include(c => c.SeenByUsers)
                    .ThenInclude(sbu => sbu.User)
                .FirstOrDefaultAsync();
