@@ -8,7 +8,7 @@
 
         public string UserId { get; set; } // Khóa ngoại tới bảng User
         public User User { get; set; }
-
+        public bool IsSeen {  get; set; } = false;
         public DateTime SeenAt { get; set; } = DateTime.UtcNow;
     }
 }

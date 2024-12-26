@@ -9,6 +9,7 @@ namespace real_estate_api.UnitofWork
         IPostDetailRepository PostDetailRepository { get; }
         ISavedPostRepository SavedPostRepository { get; }
         IChatRepository ChatRepository { get; }
+        IMessageRepository MessageRepository { get; }
 
         Task SaveChangesAsync();
     }

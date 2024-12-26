@@ -7,7 +7,7 @@ using System.Security.Claims;
 namespace real_estate_api.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/chats")]
     public class ChatController : ControllerBase
     {
         private readonly IChatService _chatService;
@@ -43,9 +43,21 @@ namespace real_estate_api.Controllers
                 var chat = await _chatService.CreateChatAsync(userIds);
                 return Ok(new { chat });
             }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new
+                {
+                    status = "error",
+                    message = ex.Message
+                });
+            }
             catch (ArgumentException ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new
+                {
+                    status = "error",
+                    message = ex.Message
+                });
             }
         }
 

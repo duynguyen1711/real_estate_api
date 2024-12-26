@@ -33,18 +33,12 @@ namespace real_estate_api.Repositories
 
             if (existingChat != null)
             {
-                // Nếu chat đã tồn tại, trả về chat hiện có
-                return await _context.Chats
-                    .Include(c => c.ChatUsers)
-                    .ThenInclude(cu => cu.User)
-                    .FirstOrDefaultAsync(c => c.Id == existingChat);
+                throw new InvalidOperationException("Chat between these users already exists.");
             }
 
             // Nếu chưa có chat, tạo một chat mới
             var chat = new Chat
             {
-                Id = Guid.NewGuid().ToString(),
-                CreatedAt = DateTime.UtcNow,
                 LastMessage = null // bạn có thể cập nhật tin nhắn sau khi có tin nhắn mới
             };
 

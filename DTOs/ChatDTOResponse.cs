@@ -9,6 +9,6 @@ namespace real_estate_api.DTOs
         public DateTime CreatedAt { get; set; }
         public List<string> SeenBy { get; set; }
         public string? LastMessage { get; set; }
-        public ICollection<Message> Messages { get; set; } = new List<Message>();
+        public ICollection<MessageResponeDTO> Messages { get; set; } = new List<MessageResponeDTO>();
     }
 }

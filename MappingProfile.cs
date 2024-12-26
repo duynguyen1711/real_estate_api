@@ -28,6 +28,8 @@ namespace real_estate_api
            .ForMember(dest => dest.LastMessage, opt => opt.MapFrom(src => src.LastMessage))
            .ForMember(dest => dest.Messages, opt => opt.MapFrom(src => src.Messages)); // ánh xạ danh sách messages
 
+            CreateMap<MessageRequestDTO, Message>();
+            CreateMap<Message, MessageResponeDTO>();
 
         }
     }
