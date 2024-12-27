@@ -84,7 +84,14 @@ namespace real_estate_api.Services
                 SeenBy =  chat.SeenByUsers
                     .Where(s => s.IsSeen == true)
                     .Select(s => s.UserId)
-                    .ToList()
+                    .ToList(),
+                Receiver = chat.ChatUsers
+                    .Where(cu => cu.UserId != userId)
+                    .Select(cu => new ReceiverDTO
+                    {
+                        Avatar = cu.User.Avatar,
+                        Username = cu.User.Username,
+                    }).ToList(),
             };
 
 

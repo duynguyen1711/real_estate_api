@@ -112,6 +112,7 @@ namespace real_estate_api.Controllers
                 });
             }
             var chats = await _chatService.GetChatsAsync(currentUserId);
+            await Task.Delay(3000);
             return Ok(chats);
         }
         [HttpPut("read/{chatId}")]
