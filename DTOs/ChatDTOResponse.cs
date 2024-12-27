@@ -10,5 +10,6 @@ namespace real_estate_api.DTOs
         public List<string> SeenBy { get; set; }
         public string? LastMessage { get; set; }
         public ICollection<MessageResponeDTO> Messages { get; set; } = new List<MessageResponeDTO>();
+        public List<ReceiverDTO> Receiver { get; set; } = new List<ReceiverDTO>();
     }
 }

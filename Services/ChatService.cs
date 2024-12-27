@@ -99,7 +99,7 @@ namespace real_estate_api.Services
             var chatDTOList = chatList.Select(chat => new ChatDTOResponse
             {
                 Id = chat.Id,
-                UserIDs = chat.ChatUsers.Select(cu => cu.UserId).ToList(), 
+                UserIDs = chat.ChatUsers.Select(cu => cu.UserId).ToList(),
                 CreatedAt = chat.CreatedAt,
                 SeenBy = chat.SeenByUsers
                     .Where(s => s.IsSeen == true)
@@ -113,7 +113,15 @@ namespace real_estate_api.Services
                     UserId = msg.UserId,
                     CreatedAt = msg.CreatedAt,
                     ChatId = msg.ChatId
-                }).ToList(), // Nếu cần có thông tin các tin nhắn
+                }).ToList(),
+                Receiver = chat.ChatUsers
+                    .Where(cu => cu.UserId != userId) 
+                    .Select(cu => new ReceiverDTO
+                    {
+                        Avatar = cu.User.Avatar,
+                        Username = cu.User.Username,
+                    }).ToList(),
+
             }).ToList();
 
             return chatDTOList;
