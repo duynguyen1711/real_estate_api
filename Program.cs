@@ -4,12 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using real_estate_api.Data;
 using real_estate_api.Helpers;
+using real_estate_api.Hubs;
 using real_estate_api.Interface.Service;
 using real_estate_api.Services;
 using real_estate_api.UnitofWork;
 
 var builder = WebApplication.CreateBuilder(args);
-
 // Add services to the container.
 var connectionString =
     builder.Configuration.GetConnectionString("DefaultConnection")
@@ -83,6 +83,7 @@ builder.Services.AddCors(options =>
              .AllowCredentials();
     });
 });
+builder.Services.AddSignalR();
 
 
 var app = builder.Build();
@@ -99,5 +100,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<ChatHub>("/chathub");
+
 
 app.Run();

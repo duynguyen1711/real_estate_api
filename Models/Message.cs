@@ -6,7 +6,7 @@
         public string Text {  get; set; }
         public string UserId {  get; set; }
         public string ChatId { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow.AddHours(7);
         public Chat Chat { get; set; }
         public User User { get; set; }
     }
