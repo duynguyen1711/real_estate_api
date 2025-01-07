@@ -11,5 +11,6 @@ namespace real_estate_api.Interface.Service
         Task<UserDTO> UpdateUserAsync(UpdateUserRqDTO userDTO,string id);
         Task<bool> DeleteUserAsync(string id);
         Task<List<UserDTO>> GetAllUsersAsync();
+        Task<int> GetUnreadMessagesCountAsync(string userId);
     }
 }

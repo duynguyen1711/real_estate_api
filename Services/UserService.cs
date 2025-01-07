@@ -4,6 +4,7 @@ using real_estate_api.Helpers;
 using real_estate_api.Interface.Service;
 using real_estate_api.Models;
 using real_estate_api.UnitofWork;
+using System;
 using System.Collections.Generic;
 
 namespace real_estate_api.Services
@@ -91,6 +92,19 @@ namespace real_estate_api.Services
             await _unitOfWork.SaveChangesAsync();
 
             return _mapper.Map<UserDTO>(user);
+        }
+        public async Task<int> GetUnreadMessagesCountAsync(string userId)
+        {
+            // Lấy tất cả các chat của user
+            var chatList = await _unitOfWork.ChatRepository.GetChatsByUserAsync(userId);
+
+            // Lọc ra các tin nhắn chưa được xem
+            var unreadMessagesCount = chatList
+                .Where(chat => chat.SeenByUsers
+                    .Any(s => s.UserId == userId && s.IsSeen == false))
+                .Count();
+
+            return unreadMessagesCount;
         }
     }
 }

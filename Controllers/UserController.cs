@@ -128,7 +128,13 @@ namespace real_estate_api.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-
-
+        [Authorize]
+        [HttpGet("notification/unread")]
+        public async Task<IActionResult> GetUnreadMessagesCount()
+        {
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            var unreadCount = await _userService.GetUnreadMessagesCountAsync(userId);
+            return Ok(new { unreadCount });
+        }
     }
 }
