@@ -22,42 +22,59 @@ namespace real_estate_api.Hubs
         }
         public async Task SendMessageAsync(string chatId, string message)
         {
-            // Lấy ID người gửi từ claims
-            var currentUserId = Context.User?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-
-            if (string.IsNullOrEmpty(currentUserId))
+            try
             {
-                throw new HubException("Unauthorized user");
+                // Lấy ID người gửi từ claims
+                var currentUserId = Context.User?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrEmpty(currentUserId))
+                {
+                    throw new HubException("Unauthorized user");
+                }
+
+                // Tạo DTO cho tin nhắn
+                var messageRequestDTO = new MessageRequestDTO
+                {
+                    Text = message,
+                    ChatId = chatId // Đây là ID của cuộc trò chuyện
+                };
+
+                // Lưu tin nhắn vào database
+                var responseDTO = await _messageService.AddMessageAsync(messageRequestDTO, currentUserId);
+
+                // Lấy thông tin chat từ database
+                var chat = await _chatService.GetChatAsync(chatId, currentUserId);
+
+                if (chat == null)
+                {
+                    throw new HubException("Chat not found or you are not authorized to access it.");
+                }
+
+                // Xác định người nhận từ UserIDs, là người duy nhất không phải là người gửi
+                var receiverId = chat.UserIDs.FirstOrDefault(id => id != currentUserId);
+
+                if (string.IsNullOrEmpty(receiverId))
+                {
+                    throw new HubException("Receiver not found.");
+                }
+
+                var covertTime = responseDTO.CreatedAt.AddHours(-7); // Chuyển thời gian về timezone mong muốn
+
+                // Gửi tin nhắn cho người nhận
+                await Clients.User(receiverId).SendAsync("ReceiveMessage", responseDTO.Text, covertTime);
             }
-
-            // Tạo DTO cho tin nhắn
-            var messageRequestDTO = new MessageRequestDTO
+            catch (HubException hubEx)
             {
-                Text = message,
-                ChatId = chatId // Đây là ID của cuộc trò chuyện
-            };
-
-            // Lưu tin nhắn vào database
-            var responseDTO = await _messageService.AddMessageAsync(messageRequestDTO, currentUserId);
-
-            // Lấy thông tin chat từ database
-            var chat = await _chatService.GetChatAsync(chatId, currentUserId);
-
-            if (chat == null)
-            {
-                throw new HubException("Chat not found or you are not authorized to access it.");
+                // Xử lý các lỗi liên quan đến Hub (ví dụ: không được phép truy cập, không tìm thấy người nhận, v.v.)
+                Console.Error.WriteLine($"HubException: {hubEx.Message}");
+                throw; // Ném lại lỗi để SignalR có thể phản hồi với client
             }
-
-            // Xác định người nhận từ UserIDs, là người duy nhất không phải là người gửi
-            var receiverId = chat.UserIDs.FirstOrDefault(id => id != currentUserId);
-
-            if (string.IsNullOrEmpty(receiverId))
+            catch (Exception ex)
             {
-                throw new HubException("Receiver not found.");
+                // Xử lý các lỗi không phải HubException (ví dụ: lỗi khi kết nối đến cơ sở dữ liệu)
+                Console.Error.WriteLine($"Exception: {ex.Message}");
+                throw new HubException("An error occurred while sending the message.");
             }
-            var covertTime = responseDTO.CreatedAt.AddHours(-7);
-            // Gửi tin nhắn cho người nhận
-            await Clients.User(receiverId).SendAsync("ReceiveMessage", responseDTO.Text, covertTime);
         }
 
 
